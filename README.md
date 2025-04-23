@@ -95,8 +95,8 @@ collection.insert_one({'title': title, 'price': price})
 
 > **学习感悟**：爬虫是打开数据世界大门的钥匙，但更需牢记——技术应当用于创造价值，而非突破法律边界。每一次数据采集前，请多问一句："这真的有必要吗？"
 实例:
-> ```python
-> import requests
+```python
+import requests
 from bs4 import BeautifulSoup
 import time
 
