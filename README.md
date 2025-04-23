@@ -94,7 +94,61 @@ collection.insert_one({'title': title, 'price': price})
 3. 数据价值挖掘：结合pandas进行数据分析
 
 > **学习感悟**：爬虫是打开数据世界大门的钥匙，但更需牢记——技术应当用于创造价值，而非突破法律边界。每一次数据采集前，请多问一句："这真的有必要吗？"
+实例:
+> ```python
+> import requests
+from bs4 import BeautifulSoup
+import time
 
+def qidian_yuepiao_spider():
+    # 基础配置
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
+        'Referer': 'https://www.qidian.com/'
+    }
+    
+    try:
+        # 发送请求
+        response = requests.get(
+            url='https://www.qidian.com/rank/yuepiao/',
+            headers=headers,
+            timeout=10
+        )
+        
+        if response.status_code != 200:
+            print(f'请求失败，状态码：{response.status_code}')
+            return
+
+        # 解析数据
+        soup = BeautifulSoup(response.text, 'lxml')
+        books = soup.select('.rank-view-list li')  # 根据实际页面结构调整选择器
+        
+        print(f'{"序号":<5}{"书名":<20}{"作者":<15}{"月票数":<10}{"类型":<10}')
+        print('='*60)
+        
+        for index, book in enumerate(books[:20], 1):  # 取前20名
+            try:
+                title = book.select_one('.book-info-title').text.strip()
+                author = book.select_one('.author a').text.strip()
+                category = book.select_one('.author span').text.strip()
+                # 月票数可能存在的不同位置
+                votes = book.select_one('.month-ticket span').text.strip() \
+                        or book.select_one('.vote-info').text.strip()
+                
+                print(f'{index:<5}{title[:15]:<20}{author[:10]:<15}{votes:<10}{category:<10}')
+            except Exception as e:
+                print(f"第{index}条数据解析失败：{str(e)}")
+                continue
+
+    except Exception as e:
+        print(f'爬虫运行异常：{str(e)}')
+    finally:
+        # 遵守爬虫礼仪
+        time.sleep(2)
+
+if __name__ == '__main__':
+    qidian_yuepiao_spider()
+```
 ---
 
 
